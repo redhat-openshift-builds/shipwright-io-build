@@ -7,6 +7,7 @@ metadata:
     build.appstudio.redhat.com/pull_request_number: '{{pull_request_number}}'
     build.appstudio.redhat.com/target_branch: '{{target_branch}}'
     pipelinesascode.tekton.dev/max-keep-runs: "3"
+    pipelinesascode.tekton.dev/task: "[.tekton/openshift-builds-controller-unit-tests.yaml]"
     pipelinesascode.tekton.dev/on-cel-expression: event == "pull_request" && target_branch
       == "builds-1.1"
   creationTimestamp: null
@@ -95,6 +96,10 @@ spec:
     - default: "false"
       description: Skip checks against built image
       name: skip-checks
+      type: string
+    - default: "false"
+      description: Skip unit testing
+      name: skip-unit-tests
       type: string
     - default: "false"
       description: Execute the build with network isolation
@@ -207,6 +212,20 @@ spec:
         workspace: workspace
       - name: git-basic-auth
         workspace: git-auth
+    - name: run-unit-tests
+      runAfter:
+      - prefetch-dependencies
+      taskRef:
+        name: controller-unit-tests
+      when:
+      - input: $(params.skip-unit-tests)
+        operator: in
+        values:
+        - "false"
+      workspaces:
+      - name: source
+        subPath: source
+        workspace: workspace
     - name: build-container
       params:
       - name: IMAGE
@@ -226,7 +245,7 @@ spec:
       - name: BUILD_ARGS_FILE
         value: $(params.build-args-file)
       runAfter:
-      - prefetch-dependencies
+      - run-unit-tests
       taskRef:
         params:
         - name: name
