@@ -20,7 +20,7 @@ RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 GO111MODULE=on go build -a -mod=vendor
 # --- start build stage #2
 # RPM dependencies can't be fetched hermetically with Cachi2
 # Using UBI 9 which already includes necessary tar package
-FROM registry.access.redhat.com/ubi9/ubi-minimal:9.4@sha256:73f7dcacb460dad137a58f24668470a5a2e47378838a0190eef0ab532c6e8998
+FROM registry.access.redhat.com/ubi9/ubi-minimal:9.4@sha256:f5d2c6a1e0c86e4234ea601552dbabb4ced0e013a1efcbfb439f1f6a7a9275b0
 
 RUN \
   microdnf --assumeyes --nodocs install git git-lfs && \
