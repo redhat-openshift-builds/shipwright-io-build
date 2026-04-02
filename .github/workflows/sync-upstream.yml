@@ -1,0 +1,40 @@
+name: Sync from upstream
+
+on:
+  schedule:
+    - cron: '0 6 * * *'   # daily at 06:00 UTC
+  workflow_dispatch: {}
+
+concurrency:
+  group: sync-upstream-main
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    if: ${{ github.repository == 'redhat-openshift-builds/shipwright-io-build' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+          ssh-key: ${{ secrets.SYNC_DEPLOY_KEY }}
+
+      - name: Fetch upstream
+        run: |
+          git remote add upstream https://github.com/shipwright-io/build.git
+          git fetch upstream main
+
+      - name: Push upstream to main
+        run: |
+          UPSTREAM_SHA=$(git rev-parse upstream/main)
+          LOCAL_SHA=$(git rev-parse HEAD)
+
+          if [ "$UPSTREAM_SHA" = "$LOCAL_SHA" ]; then
+            echo "Already up to date with upstream ($LOCAL_SHA)"
+            exit 0
+          fi
+
+          echo "Syncing main: $LOCAL_SHA -> $UPSTREAM_SHA"
+          git push origin upstream/main:main
