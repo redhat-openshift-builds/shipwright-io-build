@@ -24,9 +24,9 @@ var _ = Describe("Endpoints", func() {
 				Expect(port).To(Equal(expectedPort), "for "+url)
 			}
 		},
-		Entry("Check a URL with default port", "registry.access.redhat.com/ubi9/ubi-minimal", "registry.access.redhat.com", 443, false),
-		Entry("Check a URL with custom port", "registry.access.redhat.com:9443/ubi9/ubi-minimal", "registry.access.redhat.com", 9443, false),
+		Entry("Check a URL with default port", "registry.access.redhat.com/ubi10/ubi-minimal", "registry.access.redhat.com", 443, false),
+		Entry("Check a URL with custom port", "registry.access.redhat.com:9443/ubi10/ubi-minimal", "registry.access.redhat.com", 9443, false),
 		Entry("Check a URL without host", "ubuntu", "index.docker.io", 443, false),
-		Entry("Check invalid URL", "ftp://registry.access.redhat.com/ubi9/ubi-minimal", "", 0, true),
+		Entry("Check invalid URL", "ftp://registry.access.redhat.com/ubi10/ubi-minimal", "", 0, true),
 	)
 })
